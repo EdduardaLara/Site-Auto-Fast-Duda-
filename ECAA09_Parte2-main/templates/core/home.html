@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3 mt-5">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Bem-vindo ao AutoFix</h1>
+        <p class="col-md-8 fs-4">O sistema integrado para gestão de problemas mecânicos. Conectamos clientes a escritórios especializados de forma rápida e eficiente.</p>
+        
+        {% if not user.is_authenticated %}
+            <div class="mt-4">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-2">Fazer Login</a>
+                <a href="{% url 'signup' %}" class="btn btn-outline-secondary btn-lg">Criar Conta (Cliente ou Oficina)</a>
+            </div>
+        {% else %}
+             <div class="mt-4">
+                <h3>Olá, {{ user.username }}!</h3>
+                {% if user.is_cliente %}
+                    <a href="{% url 'dashboard_cliente' %}" class="btn btn-success btn-lg">Acessar Painel do Cliente</a>
+                {% elif user.is_oficina %}
+                    <a href="{% url 'dashboard_oficina' %}" class="btn btn-success btn-lg">Acessar Painel da Oficina</a>
+                {% endif %}
+             </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row align-items-md-stretch">
+    <div class="col-md-6">
+        <div class="h-100 p-5 text-white bg-dark rounded-3">
+            <h2>Para Oficinas</h2>
+            <p>Encontre novos serviços baseados na sua especialidade e aumente sua carteira de clientes.</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="h-100 p-5 bg-light border rounded-3">
+            <h2>Para Clientes</h2>
+            <p>Descreva o problema do seu carro e receba atenção das melhores oficinas da região.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

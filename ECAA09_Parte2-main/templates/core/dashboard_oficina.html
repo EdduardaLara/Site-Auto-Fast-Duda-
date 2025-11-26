@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Painel do Escritório/Oficina</h2>
+
+<div class="card mb-5 border-success">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">Meus Serviços em Andamento</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Carro</th>
+                        <th>Problema</th>
+                        <th>Cliente</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for servico in meus_servicos %}
+                    <tr>
+                        <td>{{ servico.modelo_carro }}</td>
+                        <td>{{ servico.titulo }}</td>
+                        <td>{{ servico.cliente.username }}</td>
+                        <td>
+                            <span class="badge {% if servico.status == 'CONCLUIDO' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                {{ servico.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if servico.status != 'CONCLUIDO' %}
+                                <a href="{% url 'concluir_servico' servico.pk %}" class="btn btn-success btn-sm">
+                                    Concluir Serviço
+                                </a>
+                            {% else %}
+                                <span class="text-muted"><small>Finalizado</small></span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-3 text-muted">
+                            Você não tem nenhum serviço ativo no momento.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<h4 class="text-primary mb-3 border-bottom pb-2">Novos Chamados Disponíveis</h4>
+
+<div class="row">
+    {% for problema in problemas_disponiveis %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card mb-4 shadow-sm h-100">
+                {% if problema.imagem %}
+                    <img src="{{ problema.imagem.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Foto do problema">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <span class="text-muted">Sem foto</span>
+                    </div>
+                {% endif %}
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ problema.modelo_carro }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ problema.titulo }}</h6>
+                    <p class="card-text flex-grow-1">{{ problema.descricao|truncatechars:80 }}</p>
+                    
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Cliente: <strong>{{ problema.cliente.username }}</strong></small>
+                            <small class="text-muted">{{ problema.data_criacao|date:"d/m" }}</small>
+                        </div>
+                        <a href="{% url 'pegar_servico' problema.pk %}" class="btn btn-outline-primary w-100">
+                            Selecionar este Trabalho
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center py-4">
+                <h4>Tudo tranquilo!</h4>
+                <p>Não há novos problemas cadastrados pelos clientes aguardando oficina.</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

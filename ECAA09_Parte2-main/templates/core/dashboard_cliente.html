@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Painel do Cliente</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">Cadastrar Novo Problema</div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary w-100">Registrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h3>Meus Problemas Cadastrados</h3>
+        
+        {% for problema in problemas %}
+            <div class="card mb-3 border-start border-4 {% if problema.oficina %}border-success{% else %}border-warning{% endif %}">
+                <div class="row g-0">
+                    
+                    <div class="col-md-4">
+                        {% if problema.imagem %}
+                            <img src="{{ problema.imagem.url }}" class="img-fluid rounded-start h-100 w-100" style="object-fit: cover; min-height: 150px;" alt="Foto do problema">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted" style="min-height: 150px;">
+                                Sem foto
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ problema.modelo_carro }} - {{ problema.titulo }}</h5>
+                            <p class="card-text">{{ problema.descricao }}</p>
+                            
+                            <hr>
+                            
+                            {% if problema.oficina %}
+                                <div class="alert alert-success py-2 mb-0">
+                                    <strong>Oficina Interessada!</strong><br>
+                                    O escritório <em>{{ problema.oficina.username }}</em> pegou seu caso.<br>
+                                    <small>Status: {{ problema.get_status_display }}</small>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning py-2 mb-0">
+                                    <strong>Aguardando...</strong><br>
+                                    Nenhum escritório selecionou este problema ainda.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="alert alert-secondary">
+                Você ainda não cadastrou nenhum problema. Use o formulário ao lado.
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
